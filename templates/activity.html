@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work Sheet</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    input[type="text"], input[type="date"], select {
+      width: 100%;
+      padding: 5px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .form-container {
+      width: 300px; /* Make form container smaller */
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+      margin-bottom: 20px;
+    }
+    .form-container label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    .form-container input[type="text"], .form-container input[type="date"], .form-container select {
+      margin-bottom: 10px;
+    }
+    .form-container button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .form-container button:hover {
+      background-color: #0056b3;
+    }
+    .delete-button {
+      background-color: #dc3545;
+    }
+    .delete-button:hover {
+      background-color: #c82333;
+    }
+  </style>
+</head>
+<body>
+  <h2>Work Sheet</h2>
+
+  <!-- Form for entering data in a compact box -->
+  <div class="form-container">
+    <form method="POST" action="{% url 'activity' %}">
+      {% csrf_token %}
+      <label for="date">
+        Date:
+        <input type="date" id="date" name="date" required>
+      </label>
+      <label for="client">
+        Client:
+        <input type="text" id="client" name="client" placeholder="Client Name" required>
+      </label>
+      <label for="activity">
+        Activity:
+        <input type="text" id="activity" name="activity" placeholder="Activity" required>
+      </label>
+      <label for="status">
+        Status:
+        <select name="status" id="status" required>
+          <option value="pending">Pending</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+        </select>
+      </label>
+      <button type="submit">Submit Entry</button>
+    </form>
+  </div>
+
+  <!-- Table to display data -->
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Client</th>
+        <th>Activity</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for activity in activities %}
+        <tr>
+          <td>{{ activity.date }}</td>
+          <td>{{ activity.client }}</td>
+          <td>{{ activity.activity }}</td>
+          <td>{{ activity.status }}</td>
+          <td>
+            <form method="POST" action="{% url 'activity' %}">
+              {% csrf_token %}
+              <input type="hidden" name="activity_id" value="{{ activity.id }}">
+              <button type="submit" class="delete-button" name="action" value="delete">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="5">No entries yet.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
